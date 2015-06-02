@@ -1181,6 +1181,49 @@ interface <dfn>NavigatorPresentation</dfn> : EventTarget {
         </section>
         <section>
           <h4>
+            Establishing a presentation connection on presenting page
+          </h4>
+          <p>
+            When a new browser context created on a user-selected presentation
+            display, user agent is to establish a presentation connection to
+            controlling page, it must run the following steps:
+          </p>
+          <ol>
+            <li>Set <em>NavigatorPresentation.session</em> to
+            <code>undefined</code>.
+            </li>
+            <li>Create new <code>PresentationSession</code> <em>S</em>.
+            </li>
+            <li>Let <em>I</em> be a random alphanumeric value of at least 16
+            characters drawn from the characters <code>[A-Za-z0-9]</code>.
+            </li>
+            <li>Set <code>S.state</code> to <code>disconnect</code> and <code>
+              S.id</code> to<em>I</em>
+            </li>
+            <li>Set <code>NavigatorPresentation.session</code> to
+            <em>S</em><code>.</code>
+            </li>
+            <li>
+              <span data-anolis-spec="w3c-html">Queue a task</span> <em>T</em>
+              to connect <em>S</em> to the controlling browsing context using
+              implementation specific mechanism.
+            </li>
+            <li>If <em>T</em> completes successfully, run the following steps:
+              <ol>
+                <li>Set <code>S.state</code> to <code>connected</code>.
+                </li>
+                <li>
+                  <span data-anolis-spec="w3c-html">Queue a task</span> to
+                  <span data-anolis-spec="w3c-html" title=
+                  "concept-event-fire">fire an event</span> named statechange
+                  at <em>S</em>.
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </section>
+        <section>
+          <h4>
             The <code>onavailablechange</code> EventHandler
           </h4>
           <p>
@@ -1216,14 +1259,14 @@ interface <dfn>NavigatorPresentation</dfn> : EventTarget {
             "https://github.com/w3c/presentation-api/blob/gh-pages/uc-req.md#req08-power-saving-friendly">
             power saving non-functional requirement</a>, the user agent must
             keep track of the number of <code>EventHandler</code>s registered
-            to the <code>availablechange</code> event. Using this
-            information, implementation specific discovery of <span title=
+            to the <code>availablechange</code> event. Using this information,
+            implementation specific discovery of <span title=
             "presentation-display">presentation displays</span> can be resumed
             or suspended, in order to save power.
           </p>The user agent must keep a <dfn>list of available presentation
           displays</dfn>. According to the number of event handlers for
-          <code>availablechange</code>, the user agent must also keep the
-          list up to date by running the algorithm for <span title=
+          <code>availablechange</code>, the user agent must also keep the list
+          up to date by running the algorithm for <span title=
           "algorithm-monitor-available">monitoring the list of available
           presentation displays</span>.
           <section>

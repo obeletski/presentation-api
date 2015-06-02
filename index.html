@@ -77,8 +77,8 @@
       <h1>
         Presentation API
       </h1>
-      <h2 class="no-num no-toc" id="editor's-draft-1-june-2015">
-        Editor's Draft 1 June 2015
+      <h2 class="no-num no-toc" id="editor's-draft-2-june-2015">
+        Editor's Draft 2 June 2015
       </h2>
       <dl>
         <dt>
@@ -280,18 +280,21 @@
      <li><a href="#establishing-a-presentation-connection"><span class="secno">6.4.3 </span>
             Establishing a presentation connection
           </a></li>
-     <li><a href="#the-onavailablechange-eventhandler"><span class="secno">6.4.4 </span>
+     <li><a href="#establishing-a-presentation-connection-on-presenting-page"><span class="secno">6.4.4 </span>
+            Establishing a presentation connection on presenting page
+          </a></li>
+     <li><a href="#the-onavailablechange-eventhandler"><span class="secno">6.4.5 </span>
             The <code>onavailablechange</code> EventHandler
           </a>
       <ol>
-       <li><a href="#adding-an-eventhandler-to-onavailablechange"><span class="secno">6.4.4.1 </span>
+       <li><a href="#adding-an-eventhandler-to-onavailablechange"><span class="secno">6.4.5.1 </span>
               Adding an <code>EventHandler</code> to
               <code>onavailablechange</code>
             </a></li>
-       <li><a href="#removing-an-eventhandler"><span class="secno">6.4.4.2 </span>
+       <li><a href="#removing-an-eventhandler"><span class="secno">6.4.5.2 </span>
               Removing an <code>EventHandler</code>
             </a></li>
-       <li><a href="#monitoring-the-list-of-available-presentation-displays"><span class="secno">6.4.4.3 </span>
+       <li><a href="#monitoring-the-list-of-available-presentation-displays"><span class="secno">6.4.5.3 </span>
               Monitoring the list of available presentation displays
             </a></ol></ol></li>
    <li><a href="#interface-availablechangeevent"><span class="secno">6.5 </span>
@@ -1053,7 +1056,7 @@ interface <dfn id="presentationsession">PresentationSession</dfn> : EventTarget 
           <p class="open-issue">
             ISSUE: Do we want to distinguish the permission-denied outcome from
             the no-screens-available outcome? Developers would be able to infer
-            it anyway from <a href="#onavailablechange"><code>onavailablechange</code></a>.
+            it anyway from <code>availablechange</code>.
           </p>
         </section>
         <section>
@@ -1210,7 +1213,49 @@ interface <dfn id="presentationsession">PresentationSession</dfn> : EventTarget 
           </p>
         </section>
         <section>
-          <h4 id="the-onavailablechange-eventhandler"><span class="secno">6.4.4 </span>
+          <h4 id="establishing-a-presentation-connection-on-presenting-page"><span class="secno">6.4.4 </span>
+            Establishing a presentation connection on presenting page
+          </h4>
+          <p>
+            When a new browser context created on a user-selected presentation
+            display, user agent is to establish a presentation connection to
+            controlling page, it must run the following steps:
+          </p>
+          <ol>
+            <li>Set <em>NavigatorPresentation.session</em> to
+            <code>undefined</code>.
+            </li>
+            <li>Create new <a href="#presentationsession"><code>PresentationSession</code></a> <em>S</em>.
+            </li>
+            <li>Let <em>I</em> be a random alphanumeric value of at least 16
+            characters drawn from the characters <code>[A-Za-z0-9]</code>.
+            </li>
+            <li>Set <code>S.state</code> to <code>disconnect</code> and <code>
+              S.id</code> to<em>I</em>
+            </li>
+            <li>Set <code>NavigatorPresentation.session</code> to
+            <em>S</em><code>.</code>
+            </li>
+            <li>
+              <a class="external" data-anolis-spec="w3c-html" href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#queue-a-task">Queue a task</a> <em>T</em>
+              to connect <em>S</em> to the controlling browsing context using
+              implementation specific mechanism.
+            </li>
+            <li>If <em>T</em> completes successfully, run the following steps:
+              <ol>
+                <li>Set <code>S.state</code> to <code>connected</code>.
+                </li>
+                <li>
+                  <a class="external" data-anolis-spec="w3c-html" href="http://www.w3.org/html/wg/drafts/html/master/webappapis.html#queue-a-task">Queue a task</a> to
+                  <a class="external" data-anolis-spec="w3c-html" href="http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#concept-event-fire" title="concept-event-fire">fire an event</a> named statechange
+                  at <em>S</em>.
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </section>
+        <section>
+          <h4 id="the-onavailablechange-eventhandler"><span class="secno">6.4.5 </span>
             The <a href="#onavailablechange"><code>onavailablechange</code></a> EventHandler
           </h4>
           <p>
@@ -1245,33 +1290,33 @@ interface <dfn id="presentationsession">PresentationSession</dfn> : EventTarget 
             In order to satisfy the <a href="https://github.com/w3c/presentation-api/blob/gh-pages/uc-req.md#req08-power-saving-friendly">
             power saving non-functional requirement</a>, the user agent must
             keep track of the number of <code>EventHandler</code>s registered
-            to the <a href="#onavailablechange"><code>onavailablechange</code></a> event. Using this
-            information, implementation specific discovery of <span title="presentation-display">presentation displays</span> can be resumed
+            to the <code>availablechange</code> event. Using this information,
+            implementation specific discovery of <span title="presentation-display">presentation displays</span> can be resumed
             or suspended, in order to save power.
           </p>The user agent must keep a <dfn id="list-of-available-presentation-displays">list of available presentation
           displays</dfn>. According to the number of event handlers for
-          <a href="#onavailablechange"><code>onavailablechange</code></a>, the user agent must also keep the
-          list up to date by running the algorithm for <a href="#algorithm-monitor-available" title="algorithm-monitor-available">monitoring the list of available
+          <code>availablechange</code>, the user agent must also keep the list
+          up to date by running the algorithm for <a href="#algorithm-monitor-available" title="algorithm-monitor-available">monitoring the list of available
           presentation displays</a>.
           <section>
-            <h5 id="adding-an-eventhandler-to-onavailablechange"><span class="secno">6.4.4.1 </span>
+            <h5 id="adding-an-eventhandler-to-onavailablechange"><span class="secno">6.4.5.1 </span>
               Adding an <code>EventHandler</code> to
               <a href="#onavailablechange"><code>onavailablechange</code></a>
             </h5>
             <p>
               When an event handler is added to the list of event handlers
-              registered for the <a href="#onavailablechange"><code>onavailablechange</code></a> event, the user
+              registered for the <code>availablechange</code> event, the user
               agent must run the <a href="#algorithm-monitor-available" title="algorithm-monitor-available">algorithm to monitor the list of
               available presentation displays</a>.
             </p>
           </section>
           <section>
-            <h5 id="removing-an-eventhandler"><span class="secno">6.4.4.2 </span>
+            <h5 id="removing-an-eventhandler"><span class="secno">6.4.5.2 </span>
               Removing an <code>EventHandler</code>
             </h5>
             <p>
               When an event handler is removed from the list of event handlers
-              registered to the <a href="#onavailablechange"><code>onavailablechange</code></a> event, the user
+              registered to the <code>availablechange</code> event, the user
               agent must run the following steps:
             </p>
             <ul>
@@ -1282,7 +1327,7 @@ interface <dfn id="presentationsession">PresentationSession</dfn> : EventTarget 
             </ul>
           </section>
           <section>
-            <h5 id="monitoring-the-list-of-available-presentation-displays"><span class="secno">6.4.4.3 </span>
+            <h5 id="monitoring-the-list-of-available-presentation-displays"><span class="secno">6.4.5.3 </span>
               Monitoring the list of available presentation displays
             </h5>
             <p>
